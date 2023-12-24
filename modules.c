@@ -62,11 +62,48 @@ int directionChange(char ant){
 }
 
 void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, int iterations){
-    fprintf(out, "%d: \n", iterations);
+    
+    char cells[rows*columns];
+    int idx = 0;
     for(int i=0; i<rows; i++){
-            for(int j=0; j<columns; j++){
+        for(int j=0; j<columns; j++){
+            cells[idx] = map[i][j].content;
+            idx++;
+        }
+    }
+
+    int newRows = rows*2+1;
+    int newColumns = columns*2+1;
+
+    char mapBeautified[newRows][newColumns];
+
+    idx = 0;
+    for(int i=0; i<newRows; i++){
+        for(int j=0; j<newColumns; j++){
+            if(i == 0 || i == newRows-1){
+                mapBeautified[i][j] = '-';
+            }else if(j == 0 || j == newColumns-1){
+                mapBeautified[i][j] = '|';
+            }else if(i%2 ==1 && j%2==1){
+                mapBeautified[i][j] = cells[idx];
+                idx++;
+            }else{
+                if(i%2==1){
+                    mapBeautified[i][j] = '|';
+                }else{
+                    mapBeautified[i][j] = '-';
+                }
                 
-                fprintf(out, "%c ", map[i][j].content);
+            }
+            
+        }
+    }
+
+    fprintf(out, "%d: \n", iterations);
+    for(int i=0; i<newRows; i++){
+            for(int j=0; j<newColumns; j++){
+                
+                fprintf(out, "%c", mapBeautified[i][j]);
             }
             fprintf(out, "\n");
         }

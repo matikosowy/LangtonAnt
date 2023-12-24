@@ -11,13 +11,12 @@ int main(int argc, char** argv){
     FILE *out = argc>4 ? fopen(argv[4], "w") : stdout;
     int direction = argc>5 ? atoi(argv[5]) : 0;
 
-    int percentage = 50;
+    int percentage = 0;
 
     cell map[MAX_SIZE][MAX_SIZE];
 
     //mapAllWhite(map, rows, columns);
     mapBlackByPercentage(map, rows, columns, percentage);
-    printMap(map, rows, columns, stdout, 1);
 
     setColorParameter(map, rows, columns);
     placeAntInTheMiddle(map, rows, columns, direction);
