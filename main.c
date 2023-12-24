@@ -11,64 +11,27 @@ int main(int argc, char** argv){
     FILE *out = argc>4 ? fopen(argv[4], "w") : stdout;
     int direction = argc>5 ? atoi(argv[5]) : 0;
 
+    int percentage = 50;
+
     cell map[MAX_SIZE][MAX_SIZE];
 
-    // wszedzie biale pola
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            map[i][j].content = ' ';
-        }
-    }
-    // uzupelnienie parametru koloru
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            if(map[i][j].content == ' '){
-                map[i][j].color = 'w';
-            }
-            if(map[i][j].content == '#'){
-                map[i][j].color = 'b';
-            }
-        }
-    }
-        // ustawienie mrowki
-    map[rows/2][columns/2].content = 't';
+    //mapAllWhite(map, rows, columns);
+    mapBlackByPercentage(map, rows, columns, percentage);
+    printMap(map, rows, columns, stdout, 1);
 
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            if(map[i][j].content == 't'){
-                switch(direction){
-                    case 0:
-                        map[i][j].content = '^';
-                        break;
-                    case 1:
-                        map[i][j].content = '>';
-                        break;
-                    case 2:
-                        map[i][j].content = 'v';
-                        break;
-                    case 3: 
-                        map[i][j].content = '<';
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
+    setColorParameter(map, rows, columns);
+    placeAntInTheMiddle(map, rows, columns, direction);
     
     int help = iterations;
     while(iterations>0){
-        
         printMap(map, rows, columns, out, help - iterations);
 
-        if(magic(map, rows, columns) == 1){
+        if(moveAnt(map, rows, columns) == 1){
             break;
         }
         
         iterations--;
     }
-
 
     return 0;
 }

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "modules.h"
 
 
@@ -56,7 +57,8 @@ int directionChange(char ant){
         case '<':
             return 3;
     }
-
+    printf("Wrong direction error!\n");
+    return -1;
 }
 
 void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, int iterations){
@@ -71,7 +73,7 @@ void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, in
     fprintf(out, "\n");
 }
 
-int magic(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
+int moveAnt(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
 
     for(int i=0; i<rows; i++){
             for(int j=0; j<columns; j++){
@@ -217,4 +219,81 @@ int magic(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
             }
         }
     return 0;
+}
+
+void setColorParameter(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<columns; j++){
+            if(map[i][j].content == ' '){
+                map[i][j].color = 'w';
+            }
+            if(map[i][j].content == '#'){
+                map[i][j].color = 'b';
+            }
+        }
+    }
+}
+
+void placeAntInTheMiddle(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, int direction){
+    map[rows/2][columns/2].content = 't';
+
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<columns; j++){
+            if(map[i][j].content == 't'){
+                switch(direction){
+                    case 0:
+                        map[i][j].content = '^';
+                        break;
+                    case 1:
+                        map[i][j].content = '>';
+                        break;
+                    case 2:
+                        map[i][j].content = 'v';
+                        break;
+                    case 3: 
+                        map[i][j].content = '<';
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+}
+
+void mapAllWhite(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<columns; j++){
+            map[i][j].content = ' ';
+        }
+    }
+}
+
+double checkBlackPercentage(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
+    int blackCount = 0;
+
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<columns; j++){
+            if(map[i][j].content == '#'){
+                blackCount++;
+            }
+        }
+    }
+    double result = ((double)blackCount / (rows * columns)) * 100.0;
+
+    return result;
+}
+
+void mapBlackByPercentage(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, int percentage){
+    srand(time(NULL));
+
+    mapAllWhite(map, rows, columns);
+
+    while(checkBlackPercentage(map, rows, columns) < percentage){
+        int row = rand()%rows;
+        int column = rand()%columns;
+
+        map[row][column].content = '#';
+    }
 }
