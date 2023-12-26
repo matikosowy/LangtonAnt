@@ -272,7 +272,7 @@ void setColorParameter(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
 }
 
 void placeAntInTheMiddle(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, int direction){
-    map[rows/2][columns/2].content = 't';
+    map[rows/2 + 1][columns/2 + 1].content = 't';
 
     for(int i=0; i<rows; i++){
         for(int j=0; j<columns; j++){
