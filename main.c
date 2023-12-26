@@ -30,23 +30,38 @@ int main(int argc, char** argv){
         switch (opt) {
             case 'm':
                 rows = atoi(optarg);
+                if(rows<1){
+                    fprintf(stderr, "Nieprawidlowa liczba wierszy!\n");
+                    return 1;
+                }
                 mflag = 1;
                 break;
             case 'n':
                 columns = atoi(optarg);
+                if(columns<1){
+                    fprintf(stderr, "Nieprawidlowa liczba kolumn!\n");
+                    return 1;
+                }
                 nflag = 1;
                 break;
             case 'i':
                 iterations = atoi(optarg);
+                if(iterations<1){
+                    fprintf(stderr, "Nieprawidlowa liczba iteracji!\n");
+                    return 1;
+                }
                 iflag = 1;
                 break;
             case 'f':
-                //out = fopen(optarg, "w");
                 strcpy(writeFileName, optarg);
                 fflag = 1;
                 break;
             case 'd':
                 direction = atoi(optarg);
+                if(direction<0 && direction >4){
+                    fprintf(stderr, "Nieprawidlowy kierunek poczatkowy mrowki!\n");
+                    return 1;
+                }
                 dflag = 1;
                 break;
             case 'g':
@@ -67,25 +82,19 @@ int main(int argc, char** argv){
 
     if(!mflag){
         fprintf(stderr, "Nie wprowadzono parametru liczby wierszy!\n  Wartość domyślna = 50\n");
-        //return 1;
     }
     if(!nflag){
         fprintf(stderr, "Nie wprowadzono parametru liczby kolumn!\n  Wartość domyślna = 50\n");
-       //return 1;
     }
     if(!iflag){
         fprintf(stderr, "Nie wprowadzono parametru liczby iteracji!\n  Wartość domyślna = 500\n");
-        //return 1;
     }
     if(!fflag){
         fprintf(stderr, "Nie wprowadzono parametru pliku wyjsciowego!\n  Domyślnie: wyjście standardowe\n");
-        //return 1;
     }
     if(!dflag){
         fprintf(stderr, "Nie wprowadzono parametru kierunku poczatkowego mrowki!\n  Wartość domyślna = 0\n");
-        //return 1;
     }
-
     if(rflag == 1){
         FILE *in = fopen(readFileName, "r");
         columns = countColumns(in);
@@ -93,10 +102,9 @@ int main(int argc, char** argv){
         
         char *vector = insertMapToVector(in, rows, columns);
         vectorToMap(vector, rows, columns, map);
-        
         setColorParameter(map, rows, columns);
-
-    }else{
+    }
+    else{
         mapBlackByPercentage(map, rows, columns, percentage);
         setColorParameter(map, rows, columns);
         placeAntInTheMiddle(map, rows, columns, direction);
