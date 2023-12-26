@@ -17,3 +17,7 @@ void placeAntInTheMiddle(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, in
 void mapAllWhite(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns);
 double checkBlackPercentage(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns);
 void mapBlackByPercentage(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, int percentage);
+int countRows(FILE *file);
+int countColumns(FILE *file);
+char* insertMapToVector(FILE *file, int rows, int columns);
+void vectorToMap(char *vector, int rows, int columns, cell map[MAX_SIZE][MAX_SIZE]);
