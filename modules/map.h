@@ -1,17 +1,12 @@
+#ifndef MAP_H
+#define MAP_H
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include "struct.h"
 
-#define MAX_SIZE 100
-
-typedef struct{
-    char content;
-    char color;
-}cell;
-
-char rotate(int turn, char ant);
-int directionChange(char ant);
 void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, int iterations);
-int moveAnt(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns);
 void setColorParameter(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns);
 void placeAntInTheMiddle(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, int direction);
 void mapAllWhite(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns);
@@ -21,3 +16,5 @@ int countRows(FILE *file);
 int countColumns(FILE *file);
 char* insertMapToVector(FILE *file, int rows, int columns);
 void vectorToMap(char *vector, int rows, int columns, cell map[MAX_SIZE][MAX_SIZE]);
+
+#endif

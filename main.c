@@ -3,10 +3,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "modules.h"
+#include "modules/ant.h"
+#include "modules/map.h"
 
 int main(int argc, char** argv){
 
+    // Wartości domyślne dla zmiennych parametrycznych
     int rows = 50;
     int columns = 50;
     int iterations = 500;
@@ -15,6 +17,7 @@ int main(int argc, char** argv){
     char *readFileName = "";
     char writeFileName[50];
 
+    // Flagi dla getopt()
     int mflag = 0; // m - liczba wierszy
     int nflag = 0; // n - liczba kolumn
     int iflag = 0; // i - liczba iteracji
@@ -23,8 +26,10 @@ int main(int argc, char** argv){
     int gflag = 0; // g - opcja generowania procentowo zapelnionej mapy
     int rflag = 0; // r - nazwa pliku in (gotowa mapa do wczytania)
 
+    // Wektor 2d, przechowujący komorki mapy
     cell map[MAX_SIZE][MAX_SIZE];
     
+    // Przetwarzanie argumentow wywolania poprzez funkcję getopt()
     int opt;
     while ((opt = getopt(argc, argv, "m:n:i:f:d:g:r:")) != -1) {
         switch (opt) {
@@ -80,6 +85,8 @@ int main(int argc, char** argv){
         }
     }
 
+
+    // Obsługa flag, przetworzonych przez getopt()
     if(!mflag){
         fprintf(stderr, "Nie wprowadzono parametru liczby wierszy!\n  Wartość domyślna = 50\n");
     }
@@ -110,10 +117,11 @@ int main(int argc, char** argv){
         placeAntInTheMiddle(map, rows, columns, direction);
     }
 
+    // Folder na pliki wyjściowe
     char name[50];
     strcpy(name, writeFileName);
 
-    char *folderName = "files";
+    char *folderName = "out";
     char filePath[100];
 
     #ifdef _WIN32
@@ -122,21 +130,26 @@ int main(int argc, char** argv){
         mkdir(folderName, 0777);
     #endif
 
+    // Poruszanie się mrowki i zapis poszczegolnych iteracji do plikow
     int help = iterations;
     while(iterations>0){
-        if(iterations<200){
+        
+        int result = moveAnt(map, rows, columns);
+
+        if(iterations<200 || result == 1){
             if(fflag){
-            sprintf(name, "%s/%s_%d", folderName, writeFileName, help - iterations + 1);
-            FILE *out = fopen(name, "w");
-            printMap(map, rows, columns, out, help - iterations);
-            fclose(out);
-        }else{
-            FILE *out = stdout;
-            printMap(map, rows, columns, out, help - iterations);
-        }
+                sprintf(name, "%s/%s_%d", folderName, writeFileName, help - iterations + 1);
+                FILE *out = fopen(name, "w");
+                printMap(map, rows, columns, out, help - iterations);
+                fclose(out);
+            }else{
+                FILE *out = stdout;
+                printMap(map, rows, columns, out, help - iterations);
+            }
         }
 
-        if(moveAnt(map, rows, columns) == 1){
+        if(result == 1){
+            printf("Zapisuję tylko ostatnią iterację!\n");
             break;
         }
         iterations--;

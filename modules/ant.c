@@ -1,8 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include "modules.h"
+#include "ant.h"
 
+// Obrot mrowki
 char rotate(int turn, char ant){
     switch (ant)
     {
@@ -45,6 +43,7 @@ char rotate(int turn, char ant){
     return ant;
 }
 
+// Zmiana kierunku zwrotu mrowki
 int directionChange(char ant){
     switch(ant){
         case '^':
@@ -60,63 +59,19 @@ int directionChange(char ant){
     return -1;
 }
 
-void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, int iterations){
-    
-    char cells[rows*columns];
-    int idx = 0;
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            cells[idx] = map[i][j].content;
-            idx++;
-        }
-    }
-
-    int newRows = rows*2+1;
-    int newColumns = columns*2+1;
-
-    char mapBeautified[newRows][newColumns];
-
-    idx = 0;
-    for(int i=0; i<newRows; i++){
-        for(int j=0; j<newColumns; j++){
-            if(i == 0 || i == newRows-1){
-                mapBeautified[i][j] = '-';
-            }else if(j == 0 || j == newColumns-1){
-                mapBeautified[i][j] = '|';
-            }else if(i%2 ==1 && j%2==1){
-                mapBeautified[i][j] = cells[idx];
-                idx++;
-            }else{
-                if(i%2==1){
-                    mapBeautified[i][j] = '|';
-                }else{
-                    mapBeautified[i][j] = '-';
-                }        
-            }   
-        }
-    }
-
-    fprintf(out, "%d: \n", iterations+1);
-    for(int i=0; i<newRows; i++){
-            for(int j=0; j<newColumns; j++){
-                
-                fprintf(out, "%c", mapBeautified[i][j]);
-            }
-            fprintf(out, "\n");
-        }
-    fprintf(out, "\n");
-}
-
+// Funkcja, obsługująca zachowanie mrowki przy poruszaniu po mapie
 int moveAnt(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
 
     for(int i=0; i<rows; i++){
             for(int j=0; j<columns; j++){
                 if(map[i][j].content != ' ' && map[i][j].content != '#'){
+                    // Jeśli pole białe
                     if(map[i][j].color == 'w'){
                         map[i][j].color = 'b';
                         map[i][j].content = rotate(1, map[i][j].content);
                         int direction = directionChange(map[i][j].content);
                         
+                        // Warunki dla roznych zwrotow mrowki
                         switch (direction){
                             case 0:
                                 if(i-1 < 0){
@@ -179,7 +134,7 @@ int moveAnt(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
                             }
                         return 0;
                     }
-
+                    // Jeśli pole czarne
                     if(map[i][j].color == 'b'){
                         map[i][j].color = 'w';
                         map[i][j].content = rotate(0, map[i][j].content);
@@ -252,162 +207,4 @@ int moveAnt(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
             }
         }
     return 0;
-}
-
-void setColorParameter(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            if(map[i][j].content == ' '){
-                map[i][j].color = 'w';
-            }
-            if(map[i][j].content == '#'){
-                map[i][j].color = 'b';
-            }
-            if(map[i][j].content != ' ' && map[i][j].content != '#'){
-                map[i][j].color = 'w';
-            }
-        }
-    }
-}
-
-void placeAntInTheMiddle(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, int direction){
-    map[rows/2][columns/2].content = 't';
-
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            if(map[i][j].content == 't'){
-                switch(direction){
-                    case 0:
-                        map[i][j].content = '^';
-                        break;
-                    case 1:
-                        map[i][j].content = '>';
-                        break;
-                    case 2:
-                        map[i][j].content = 'v';
-                        break;
-                    case 3: 
-                        map[i][j].content = '<';
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-}
-
-void mapAllWhite(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            map[i][j].content = ' ';
-        }
-    }
-}
-
-double checkBlackPercentage(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
-    int blackCount = 0;
-
-    for(int i=0; i<rows; i++){
-        for(int j=0; j<columns; j++){
-            if(map[i][j].content == '#'){
-                blackCount++;
-            }
-        }
-    }
-    double result = ((double)blackCount / (rows * columns)) * 100.0;
-
-    return result;
-}
-
-void mapBlackByPercentage(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, int percentage){
-    srand(time(NULL));
-
-    mapAllWhite(map, rows, columns);
-
-    while(checkBlackPercentage(map, rows, columns) < percentage){
-        int row = rand()%rows;
-        int column = rand()%columns;
-
-        map[row][column].content = '#';
-    }
-}
-
-int countColumns(FILE *file) {
-  int count = 0;
-  int ch;
-
-  if (file == NULL) {
-    printf("Nie udało się otworzyć pliku.\n");
-    return -1;
-  }
-
-  rewind(file);
-
-  while ((ch = fgetc(file)) != '\n' && ch != EOF) {
-    count++;
-  }
-
-  return count;
-}
-
-int countRows(FILE *file) {
-  int count = 0;
-  char ch;
-
-  if (file == NULL) {
-    printf("Nie udało się otworzyć pliku.\n");
-    return -1;
-  }
-
-  rewind(file);
-
-  fseek(file, 0, SEEK_END);
-  if (ftell(file) == 0) {
-    printf("Pusty plik wejsciowy z mapa!r\n");
-    return -1;
-  }
-  fseek(file, 0, SEEK_SET);
-
-  while ((ch = fgetc(file)) != EOF) {
-    if (ch == '\n') {
-      count++;
-    }
-  }
-
-  count++;
-
-  return count;
-}
-
-char *insertMapToVector(FILE *file, int rows, int columns) {
-  char *vector = malloc(rows * columns * sizeof(char));
-
-  if (file == NULL) {
-    printf("Nie udało się otworzyć pliku.\n");
-    return NULL;
-  }
-
-  rewind(file);
-
-  int index = 0;
-  int ch;
-  while ((ch = fgetc(file)) != EOF) {
-    if (ch == '\t' || ch == '\n' || ch == '\r') {
-      continue;
-    }
-    vector[index++] = ch;
-  }
-
-  return vector;
-}
-
-void vectorToMap(char *vector, int rows, int columns, cell map[MAX_SIZE][MAX_SIZE]) {
-  int idx = 0;
-
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < columns; j++) {
-      map[i][j].content = vector[idx++];
-    }
-  }
 }
