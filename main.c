@@ -7,7 +7,8 @@
 #include "modules/map.h"
 
 int main(int argc, char** argv){
-
+    setlocale(LC_ALL, "en_US.UTF-8");
+    
     // Wartości domyślne dla zmiennych parametrycznych
     int rows = 50;
     int columns = 50;
@@ -149,7 +150,9 @@ int main(int argc, char** argv){
         }
 
         if(result == 1){
-            printf("Zapisuję tylko ostatnią iterację!\n");
+            if(iterations>200){
+                printf("Pozostało więcej niz 200 iteracji do końca. Zapisuję tylko ostatnią iterację!\n");
+            }
             break;
         }
         iterations--;

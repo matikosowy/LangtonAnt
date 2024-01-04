@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <locale.h>
+#include <wchar.h>
 #include "struct.h"
 
 void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, int iterations);

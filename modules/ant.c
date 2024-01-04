@@ -55,7 +55,6 @@ int directionChange(char ant){
         case '<':
             return 3;
     }
-    printf("Wrong direction error!\n");
     return -1;
 }
 

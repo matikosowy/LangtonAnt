@@ -1,47 +1,89 @@
 #include "map.h"
 
-// Wyświetlanie mapy w formie graficznej, po sformatowaniu (obramowania)
+// Wyświetlanie mapy w formie graficznej, po sformatowaniu (obramowania, pola i strzałki)
 void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, int iterations){
     
-    char cells[rows*columns];
+    cell cells[rows*columns];
     int idx = 0;
     for(int i=0; i<rows; i++){
         for(int j=0; j<columns; j++){
-            cells[idx] = map[i][j].content;
+            cells[idx].content = map[i][j].content;
+            cells[idx].color = map[i][j].color;
             idx++;
         }
     }
 
-    int newRows = rows*2+1;
-    int newColumns = columns*2+1;
+    int newRows = rows+2;
+    int newColumns = columns+2;
 
-    char mapBeautified[newRows][newColumns];
+    wchar_t mapBeautified[newRows][newColumns];
 
     idx = 0;
     for(int i=0; i<newRows; i++){
         for(int j=0; j<newColumns; j++){
-            if(i == 0 || i == newRows-1){
-                mapBeautified[i][j] = '-';
+            if((i == 0 || i == newRows-1) && j>0 && j<newColumns-1){
+                mapBeautified[i][j] = LINE_HORIZONTAL;
+            }else if(i == 0 && j == 0){
+                mapBeautified[i][j] = LINE_DOWN_RIGHT;
+            }else if(i == 0 && j == newColumns-1){
+                mapBeautified[i][j] = LINE_DOWN_LEFT;
+            }else if(i == newRows-1 && j == 0){
+                mapBeautified[i][j] = LINE_UP_RIGHT;
+            }else if(i == newRows-1 && j == newColumns-1){
+                mapBeautified[i][j] = LINE_UP_LEFT;
             }else if(j == 0 || j == newColumns-1){
-                mapBeautified[i][j] = '|';
-            }else if(i%2 ==1 && j%2==1){
-                mapBeautified[i][j] = cells[idx];
-                idx++;
+                mapBeautified[i][j] = LINE_VERTICAL;
             }else{
-                if(i%2==1){
-                    mapBeautified[i][j] = '|';
-                }else{
-                    mapBeautified[i][j] = '-';
-                }        
-            }   
+                switch(cells[idx].content){
+                    case '#':
+                        mapBeautified[i][j] = SQUARE_BLACK;
+                        break;
+                    case ' ':
+                        mapBeautified[i][j] = SQUARE_WHITE;
+                        break;
+                    case '^':
+                        if(cells[idx].color == 'b'){
+                            mapBeautified[i][j] = ARROW_NORTH_BLACK;
+                        }else{
+                            mapBeautified[i][j] = ARROW_NORTH_WHITE;
+                        }
+                        break;
+                    case '>':
+                        if(cells[idx].color == 'b'){
+                            mapBeautified[i][j] = ARROW_EAST_BLACK;
+                        }else{
+                            mapBeautified[i][j] = ARROW_EAST_WHITE;
+                        }
+                        break;
+                    case 'v':
+                        if(cells[idx].color == 'b'){
+                            mapBeautified[i][j] = ARROW_SOUTH_BLACK;
+                        }else{
+                            mapBeautified[i][j] = ARROW_SOUTH_WHITE;
+                        }
+                        break;
+                    case '<':
+                        if(cells[idx].color == 'b'){
+                            mapBeautified[i][j] = ARROW_WEST_BLACK;
+                        }else{
+                            mapBeautified[i][j] = ARROW_WEST_WHITE;
+                        }
+                        break;
+                }
+                if(cells[idx].content == '#'){
+                    mapBeautified[i][j] = SQUARE_BLACK;
+                }else if(cells[idx].content == ' '){
+                    mapBeautified[i][j] = SQUARE_WHITE;
+                }
+                idx++;
+            }
         }
     }
 
-    fprintf(out, "%d: \n", iterations+1);
     for(int i=0; i<newRows; i++){
             for(int j=0; j<newColumns; j++){
                 
-                fprintf(out, "%c", mapBeautified[i][j]);
+                fwprintf(out, L"%lc", mapBeautified[i][j]);
             }
             fprintf(out, "\n");
         }
