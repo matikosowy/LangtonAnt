@@ -7,7 +7,6 @@ typedef struct{
     char color;
 }cell;
 
-
 #define LINE_VERTICAL L'│'
 #define LINE_HORIZONTAL L'─'
 #define LINE_DOWN_RIGHT L'┌'

@@ -86,7 +86,6 @@ int main(int argc, char** argv){
         }
     }
 
-
     // Obsługa flag, przetworzonych przez getopt()
     if(!rflag){
         if(!mflag){
@@ -105,6 +104,7 @@ int main(int argc, char** argv){
             fprintf(stderr, "Nie wprowadzono parametru kierunku poczatkowego mrowki!\n  Wartość domyślna = 0\n");
         }
     }
+    // Przypadek, kiedy wczytujemy siatkę z pliku
     if(rflag == 1){
         FILE *in = fopen(readFileName, "r");
         columns = countColumns(in) - 2;
@@ -113,7 +113,6 @@ int main(int argc, char** argv){
         wchar_t *vector = insertMapToVector(in, rows, columns);
         vectorToMap(vector, rows, columns, map);
         readFileMapAdjustment(map, rows, columns);
-        //setColorParameter(map, rows, columns);
     }
     else{
         mapBlackByPercentage(map, rows, columns, percentage);

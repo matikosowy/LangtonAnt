@@ -246,6 +246,7 @@ wchar_t *insertMapToVector(FILE *file, int rows, int columns) {
   return vector;
 }
 
+// Zamiana znakow specjalnych na # i ' ' na czas przetwarzania 
 void readFileMapAdjustment(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
     for(int i=0; i<rows; i++){
         for(int j=0; j<columns; j++){
