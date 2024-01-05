@@ -87,7 +87,6 @@ void printMap(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns, FILE *out, in
             }
             fprintf(out, "\n");
         }
-    fprintf(out, "\n");
 }
 
 // Ustawienie koloru komorki według jej zawartości
@@ -186,7 +185,7 @@ int countColumns(FILE *file) {
 
   rewind(file);
 
-  while ((ch = fgetc(file)) != '\n' && ch != EOF) {
+  while ((ch = fgetwc(file)) != '\n' && ch != EOF) {
     count++;
   }
 
@@ -196,7 +195,7 @@ int countColumns(FILE *file) {
 // Liczy wiersze w pliku z gotową mapą wprowadzoną przez uzytkownika w pliku
 int countRows(FILE *file) {
   int count = 0;
-  char ch;
+  wchar_t ch;
 
   if (file == NULL) {
     printf("Nie udało się otworzyć pliku.\n");
@@ -224,8 +223,8 @@ int countRows(FILE *file) {
 }
 
 // Wczytanie znakow z pliku z gotową mapą od uzytkownika
-char *insertMapToVector(FILE *file, int rows, int columns) {
-  char *vector = malloc(rows * columns * sizeof(char));
+wchar_t *insertMapToVector(FILE *file, int rows, int columns) {
+  wchar_t *vector = malloc(rows * columns * sizeof(wchar_t));
 
   if (file == NULL) {
     printf("Nie udało się otworzyć pliku.\n");
@@ -235,9 +234,10 @@ char *insertMapToVector(FILE *file, int rows, int columns) {
   rewind(file);
 
   int index = 0;
-  int ch;
-  while ((ch = fgetc(file)) != EOF) {
-    if (ch == '\t' || ch == '\n' || ch == '\r') {
+  wchar_t ch;
+  while ((ch = fgetwc(file)) != EOF) {
+    if (ch == '\t' || ch == '\n' || ch == '\r' || ch == LINE_VERTICAL || ch == LINE_HORIZONTAL || ch ==  LINE_DOWN_LEFT || 
+    ch == LINE_DOWN_RIGHT || ch == LINE_UP_LEFT || ch == LINE_UP_RIGHT) {
       continue;
     }
     vector[index++] = ch;
@@ -246,8 +246,55 @@ char *insertMapToVector(FILE *file, int rows, int columns) {
   return vector;
 }
 
+void readFileMapAdjustment(cell map[MAX_SIZE][MAX_SIZE], int rows, int columns){
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<columns; j++){
+            if(map[i][j].content == SQUARE_BLACK){
+                map[i][j].content = '#';
+                map[i][j].color = 'b';
+            }
+            if(map[i][j].content == SQUARE_WHITE){
+                map[i][j].content = ' ';
+                map[i][j].color = 'w';
+            }
+            if(map[i][j].content == ARROW_EAST_BLACK){
+                map[i][j].content = '>';
+                map[i][j].color = 'b';
+            }
+            if(map[i][j].content == ARROW_EAST_WHITE){
+                map[i][j].content = '>';
+                map[i][j].color = 'w';
+            }
+            if(map[i][j].content == ARROW_NORTH_BLACK){
+                map[i][j].content = '^';
+                map[i][j].color = 'b';
+            }
+            if(map[i][j].content == ARROW_NORTH_WHITE){
+                map[i][j].content = '^';
+                map[i][j].color = 'w';
+            }
+            if(map[i][j].content == ARROW_SOUTH_BLACK){
+                map[i][j].content = 'v';
+                map[i][j].color = 'b';
+            }
+            if(map[i][j].content == ARROW_SOUTH_WHITE){
+                map[i][j].content = 'v';
+                map[i][j].color = 'w';
+            }
+            if(map[i][j].content == ARROW_WEST_BLACK){
+                map[i][j].content = '<';
+                map[i][j].color = 'b';
+            }
+            if(map[i][j].content == ARROW_WEST_WHITE){
+                map[i][j].content = 'v';
+                map[i][j].color = 'w';
+            }
+        }
+    }
+}
+
 // Przetworzenie znakow gotowej mapy od uzytkownika na mapę dla programu
-void vectorToMap(char *vector, int rows, int columns, cell map[MAX_SIZE][MAX_SIZE]) {
+void vectorToMap(wchar_t *vector, int rows, int columns, cell map[MAX_SIZE][MAX_SIZE]) {
   int idx = 0;
 
   for (int i = 0; i < rows; i++) {

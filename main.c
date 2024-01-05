@@ -88,29 +88,32 @@ int main(int argc, char** argv){
 
 
     // Obsługa flag, przetworzonych przez getopt()
-    if(!mflag){
-        fprintf(stderr, "Nie wprowadzono parametru liczby wierszy!\n  Wartość domyślna = 50\n");
-    }
-    if(!nflag){
-        fprintf(stderr, "Nie wprowadzono parametru liczby kolumn!\n  Wartość domyślna = 50\n");
-    }
-    if(!iflag){
-        fprintf(stderr, "Nie wprowadzono parametru liczby iteracji!\n  Wartość domyślna = 500\n");
-    }
-    if(!fflag){
-        fprintf(stderr, "Nie wprowadzono parametru pliku wyjsciowego!\n  Domyślnie: wyjście standardowe\n");
-    }
-    if(!dflag){
-        fprintf(stderr, "Nie wprowadzono parametru kierunku poczatkowego mrowki!\n  Wartość domyślna = 0\n");
+    if(!rflag){
+        if(!mflag){
+            fprintf(stderr, "Nie wprowadzono parametru liczby wierszy!\n  Wartość domyślna = 50\n");
+        }
+        if(!nflag){
+            fprintf(stderr, "Nie wprowadzono parametru liczby kolumn!\n  Wartość domyślna = 50\n");
+        }
+        if(!iflag){
+            fprintf(stderr, "Nie wprowadzono parametru liczby iteracji!\n  Wartość domyślna = 500\n");
+        }
+        if(!fflag){
+            fprintf(stderr, "Nie wprowadzono parametru pliku wyjsciowego!\n  Domyślnie: wyjście standardowe\n");
+        }
+        if(!dflag){
+            fprintf(stderr, "Nie wprowadzono parametru kierunku poczatkowego mrowki!\n  Wartość domyślna = 0\n");
+        }
     }
     if(rflag == 1){
         FILE *in = fopen(readFileName, "r");
-        columns = countColumns(in);
-        rows = countRows(in);
+        columns = countColumns(in) - 2;
+        rows = countRows(in) - 2;
         
-        char *vector = insertMapToVector(in, rows, columns);
+        wchar_t *vector = insertMapToVector(in, rows, columns);
         vectorToMap(vector, rows, columns, map);
-        setColorParameter(map, rows, columns);
+        readFileMapAdjustment(map, rows, columns);
+        //setColorParameter(map, rows, columns);
     }
     else{
         mapBlackByPercentage(map, rows, columns, percentage);
@@ -137,22 +140,18 @@ int main(int argc, char** argv){
         
         int result = moveAnt(map, rows, columns);
 
-        if(iterations<200 || result == 1){
-            if(fflag){
-                sprintf(name, "%s/%s_%d", folderName, writeFileName, help - iterations + 1);
-                FILE *out = fopen(name, "w");
-                printMap(map, rows, columns, out, help - iterations);
-                fclose(out);
-            }else{
-                FILE *out = stdout;
-                printMap(map, rows, columns, out, help - iterations);
-            }
+        if(fflag){
+            sprintf(name, "%s/%s_%d", folderName, writeFileName, help - iterations + 1);
+            FILE *out = fopen(name, "w");
+            printMap(map, rows, columns, out, help - iterations);
+            fclose(out);
+        }else{
+            FILE *out = stdout;
+            printMap(map, rows, columns, out, help - iterations);
         }
+        
 
         if(result == 1){
-            if(iterations>200){
-                printf("Pozostało więcej niz 200 iteracji do końca. Zapisuję tylko ostatnią iterację!\n");
-            }
             break;
         }
         iterations--;
