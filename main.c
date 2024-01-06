@@ -64,7 +64,7 @@ int main(int argc, char** argv){
                 break;
             case 'd':
                 direction = atoi(optarg);
-                if(direction<0 && direction >4){
+                if(direction<0 || direction >4){
                     fprintf(stderr, "Nieprawidlowy kierunek poczatkowy mrowki!\n");
                     return 1;
                 }
@@ -137,8 +137,6 @@ int main(int argc, char** argv){
     int help = iterations;
     while(iterations>0){
         
-        int result = moveAnt(map, rows, columns);
-
         if(fflag){
             sprintf(name, "%s/%s_%d", folderName, writeFileName, help - iterations + 1);
             FILE *out = fopen(name, "w");
@@ -148,7 +146,7 @@ int main(int argc, char** argv){
             FILE *out = stdout;
             printMap(map, rows, columns, out, help - iterations);
         }
-        
+        int result = moveAnt(map, rows, columns);
 
         if(result == 1){
             break;
