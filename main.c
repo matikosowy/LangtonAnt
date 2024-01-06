@@ -72,6 +72,9 @@ int main(int argc, char** argv){
                 break;
             case 'g':
                 percentage = atoi(optarg);
+                if(percentage < 0 || percentage > 100){
+                    fprintf(stderr, "Nieprawidlowy stosunek pol czarnych!\n");
+                }
                 gflag = 1;
                 break;
             case 'r':
